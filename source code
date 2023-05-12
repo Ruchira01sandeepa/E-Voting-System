@@ -1,0 +1,754 @@
+package system;
+
+public class voters {
+     String firstname;
+     String lastname;
+     int age;
+     String gender;
+     int userid;
+    voters() {
+
+     }
+
+     voters(String firstname,String lastname,int age,String gender,int userid)
+     {
+         this.firstname=firstname;
+         this.lastname=lastname;
+         this.age=age;
+         this.gender=gender;
+         this.userid=userid;
+     }
+     public String getfirstname()
+     {
+         System.out.println("enter first name");
+         return firstname;
+     }
+     public String getLastname()
+     {
+         System.out.println("enter last name");
+         return lastname;
+     }
+     public int getAge()
+     {
+         System.out.println("enter age");
+         return age;
+     }
+     public String getGender()
+     {
+         System.out.println("enter gender(male or female)");
+         return gender;
+     }
+     public int getUserid()
+     {
+         System.out.println("enter user id");
+         return userid;
+     }
+}
+
+
+
+
+
+package system;
+
+public class parties {
+
+        String name;
+        String mark;
+        String details;
+        parties()
+        {
+
+        }
+
+        parties(String name,String mark,String details)
+        {
+            this.name = name;
+            this.mark=mark;
+            this.details=details;
+        }
+
+        public String getName()
+        {
+            System.out.println("enter the name of the new party");
+            return name;
+        }
+        public String getMark()
+        {
+            System.out.println("enter the mark of the new party");
+            return mark;
+        }
+        public String getDetails()
+        {
+            System.out.println("enter some details about the party(leader,secretory etc..)");
+            return details;
+        }
+
+
+    }
+    
+    
+    package system;
+ abstract class displayMethods {
+     abstract void startElection();
+     abstract String getElectionName();
+     abstract String getElectionDate();
+
+}
+
+
+
+package system;
+
+    class candidates  extends voters
+    {
+        String party;
+        String district;
+        String election;
+
+        candidates() {
+
+        }
+        candidates(String firstname,String lastname,int age,String gender,String party,String district)
+        {
+            this.firstname=firstname;
+            this.lastname=lastname;
+            this.age=age;
+            this.gender=gender;
+            this.party=party;
+            this.district=district;
+        }
+        public String getParty()
+        {
+            System.out.println("enter your party");
+            return party;
+        }
+        public String getDistrict()
+        {
+            System.out.println("enter your district");
+            return district;
+        }
+        public String getElection()
+        {
+            return election;
+        }
+
+    }
+    
+    
+    package system;
+
+public class admin {
+
+
+    private static String username;
+
+
+    private static String password;
+        admin(String username,String password)
+        {
+            this.username=username;
+            this.password =password;
+        }
+        public static String getPassword() {
+            return password;
+        }
+
+       public static void setPassword(String password) {
+           admin.password = password;
+       }
+
+        public static String getUsername() {
+            return username;
+        }
+
+        public static void setUsername(String username) {
+        admin.username = username;
+    }
+
+
+
+
+}
+
+
+package system;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class elections extends displayMethods {
+    String electionName;
+    String electionDate;
+    String details;
+    elections() {
+
+    }
+
+
+    elections(String electionName,String electionDate)
+    {
+        this.electionName=electionName;
+        this.electionDate=electionDate;
+    }
+    public String getElectionName()
+    {
+        System.out.println("enter the election name");
+        return electionName;
+    }
+    public String getElectionDate()
+    {
+        System.out.println("enter the date of the election");
+        return electionDate;
+    }
+    public String getDetails()
+    {
+        System.out.println("enter some details about the election");
+        return details;
+    }
+    public void startElection()
+    {
+        Scanner input=new Scanner(System.in);
+        System.out.println("election types");
+
+        System.out.println("1.presidential election"+"\n"+"2.parliament election"+"\n"+"3.local government election");
+        int type=input.nextInt();
+        switch (type)
+        {
+            case 1:
+            {
+                System.out.println("**starting presidential election now**");
+                System.out.println("details of candidates for presidential election");
+                System.out.println("");
+                try {
+                    File myObj = new File("presidential candidate.txt");
+                    Scanner myReader = new Scanner(myObj);
+                    while (myReader.hasNextLine()) {
+                        String data = myReader.nextLine();
+                        System.out.println(data);
+                    }
+                    myReader.close();
+                } catch (FileNotFoundException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
+                }
+                System.out.println("");
+                System.out.println("**start voting now**");
+
+                Scanner scanner = new Scanner(System.in);
+                Map<String, Integer> voteCount = new HashMap<>();
+
+                // get number of voters
+                System.out.print("Enter number of voters: ");
+                int numVoters = scanner.nextInt();
+
+                // get number of candidates
+                System.out.print("Enter number of candidates: ");
+                int numCandidates = scanner.nextInt();
+                scanner.nextLine(); // consume newline character
+
+                // get candidate names
+                System.out.println("Enter candidate names:");
+                for (int i = 1; i <= numCandidates; i++) {
+                    System.out.printf("Candidate %d: ", i);
+                    String candidate = scanner.nextLine();
+                    voteCount.put(candidate, 0); // initialize vote count to 0
+                }
+
+                int invalidVotes = 0;
+                // get votes from each voter
+                for (int i = 1; i <= numVoters; i++) {
+                    System.out.printf("Vote %d: Enter candidate name: ", i);
+                    String candidate = scanner.nextLine();
+                    if (voteCount.containsKey(candidate)) {
+                        voteCount.put(candidate, voteCount.get(candidate) + 1);
+                    } else {
+                        System.out.println("Invalid vote!");
+                        invalidVotes++;
+                        // remove this vote
+                    }
+                }
+
+                // winner
+                int maxVotes = -1;
+                String winner = "";
+                for (Map.Entry<String, Integer> entry : voteCount.entrySet()) {
+                    if (entry.getValue() > maxVotes) {
+                        maxVotes = entry.getValue();
+                        winner = entry.getKey();
+                    }
+                }
+
+                 // display results
+                System.out.println("");
+                System.out.printf("**Total votes: %d**\n", numVoters);
+                System.out.println("Invalid votes: " + invalidVotes);
+                for (Map.Entry<String, Integer> entry : voteCount.entrySet()) {
+                    System.out.printf("%s: %d votes\n", entry.getKey(), entry.getValue());
+                }
+                System.out.printf("***Winner of presidential election: %s***\n", winner);
+                break;
+            }
+            case 2:
+            {
+                System.out.println("**starting parliament election now**");
+                System.out.println("details of candidates for parliament election");
+                System.out.println("");
+                try {
+                    File myObj = new File("parliament candidate.txt");
+                    Scanner myReader = new Scanner(myObj);
+                    while (myReader.hasNextLine()) {
+                        String data = myReader.nextLine();
+                        System.out.println(data);
+                    }
+                    myReader.close();
+                } catch (FileNotFoundException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
+                }
+                System.out.println("");
+                System.out.println("**start voting now**");
+
+                Scanner scanner = new Scanner(System.in);
+                Map<String, Integer> voteCount = new HashMap<>();
+
+                System.out.print("Enter number of voters: ");
+                int numVoters = scanner.nextInt();
+
+                // get number of candidates
+                System.out.print("Enter number of candidates: ");
+                int numCandidates = scanner.nextInt();
+                scanner.nextLine(); // consume newline character
+
+                // get candidate names
+                System.out.println("Enter candidate names:");
+                for (int i = 1; i <= numCandidates; i++) {
+                    System.out.printf("Candidate %d: ", i);
+                    String candidate = scanner.nextLine();
+                    voteCount.put(candidate, 0); // initialize vote count to 0
+                }
+
+                int invalidVotes = 0;
+                // get votes from each voter
+                for (int i = 1; i <= numVoters; i++) {
+                    System.out.printf("Vote %d: Enter candidate name: ", i);
+                    String candidate = scanner.nextLine();
+                    if (voteCount.containsKey(candidate)) {
+                        voteCount.put(candidate, voteCount.get(candidate) + 1);
+                    } else {
+                        System.out.println("Invalid vote!");
+                        invalidVotes++;
+                        // remove this vote
+                    }
+                }
+
+                // winner
+                int maxVotes = -1;
+                String winner = "";
+                for (Map.Entry<String, Integer> entry : voteCount.entrySet()) {
+                    if (entry.getValue() > maxVotes) {
+                        maxVotes = entry.getValue();
+                        winner = entry.getKey();
+                    }
+                }
+
+                // display results
+                System.out.println("");
+                System.out.printf("**Total votes: %d**\n", numVoters);
+                System.out.println("Invalid votes: " + invalidVotes);
+                for (Map.Entry<String, Integer> entry : voteCount.entrySet()) {
+                    System.out.printf("%s: %d votes\n", entry.getKey(), entry.getValue());
+                }
+                System.out.printf("***Winner of parliament election: %s***\n", winner);
+                break;
+            }
+
+            case 3:
+            {
+                System.out.println("**starting local government election now**");
+                System.out.println("details of candidates for local government  election");
+                System.out.println("");
+                try {
+                    File myObj = new File("local government candidate.txt");
+                    Scanner myReader = new Scanner(myObj);
+                    while (myReader.hasNextLine()) {
+                        String data = myReader.nextLine();
+                        System.out.println(data);
+                    }
+                    myReader.close();
+                } catch (FileNotFoundException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
+                }
+                System.out.println("");
+                System.out.println("**start voting now**");
+
+                Scanner scanner = new Scanner(System.in);
+                Map<String, Integer> voteCount = new HashMap<>();
+
+                // get number of voters
+                System.out.print("Enter number of voters: ");
+                int numVoters = scanner.nextInt();
+
+                // get number of candidates
+                System.out.print("Enter number of candidates: ");
+                int numCandidates = scanner.nextInt();
+                scanner.nextLine(); // consume newline character
+
+                // get candidate names
+                System.out.println("Enter candidate names:");
+                for (int i = 1; i <= numCandidates; i++) {
+                    System.out.printf("Candidate %d: ", i);
+                    String candidate = scanner.nextLine();
+                    voteCount.put(candidate, 0); // initialize vote count to 0
+                }
+
+                int invalidVotes = 0;
+                // get votes from each voter
+                for (int i = 1; i <= numVoters; i++) {
+                    System.out.printf("Vote %d: Enter candidate name: ", i);
+                    String candidate = scanner.nextLine();
+                    if (voteCount.containsKey(candidate)) {
+                        voteCount.put(candidate, voteCount.get(candidate) + 1);
+                    } else {
+                        System.out.println("Invalid vote!");
+                        invalidVotes++;
+                        // remove this vote
+                    }
+                }
+
+                // winner
+                int maxVotes = -1;
+                String winner = "";
+                for (Map.Entry<String, Integer> entry : voteCount.entrySet()) {
+                    if (entry.getValue() > maxVotes) {
+                        maxVotes = entry.getValue();
+                        winner = entry.getKey();
+                    }
+                }
+
+                // display results
+                System.out.println("");
+                System.out.printf("**Total votes: %d**\n", numVoters);
+                System.out.println("Invalid votes: " + invalidVotes);
+                for (Map.Entry<String, Integer> entry : voteCount.entrySet()) {
+                    System.out.printf("%s: %d votes\n", entry.getKey(), entry.getValue());
+                }
+                System.out.printf("***Winner of local government election: %s***\n", winner);
+                break;
+            }
+
+
+            }
+
+        }
+
+
+}
+
+
+
+package system;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+
+
+        Scanner input = new Scanner(System.in);
+        System.out.println("enter username");
+        String username = input.next();
+        System.out.println("enter password");
+        String password1 = input.next();
+        admin a = new admin("operator", "1234");
+        if (username.equals(admin.getUsername())) {
+            if (password1.equals(admin.getPassword())) {
+                System.out.println("welcome " + username);
+                int l = 1;
+                int m;
+                do {
+                    System.out.println("Do you want a service yes-1 no-0");
+                    m = input.nextInt();
+                    if (m == 0) {
+                        break;
+                    }
+
+                    System.out.println("--1.add voter" + "\n" + "--2.add candidate" + "\n" + "--3.add party" + "\n" + "--4.start election" + "\n" + "enter the number");
+                    int num = input.nextInt();
+
+
+                    switch (num) {
+                        case 1: {
+                            System.out.println("do you have an account?yes/no");
+                            String ans1 = input.next();
+                            if (ans1.equals("yes")) {
+                                System.out.println("log in to your account");
+                            } else {
+                                System.out.println("create an account");
+                                try {
+                                    File myObj = new File("voter.txt");
+                                    if (myObj.createNewFile()) {
+                                        System.out.println("File created: " + myObj.getName());
+                                    } else {
+                                        System.out.println("File already exists.");
+                                    }
+                                    FileWriter myWriter = new FileWriter("voter.txt");
+                                    int x;
+                                    int y;
+                                    do {
+                                        x = 1;
+                                        System.out.println("do you want to create account yes-1 and no-0");
+                                        y = input.nextInt();
+                                        if (y == 0) {
+                                            break;
+                                        }
+                                        voters v = new voters();
+                                        v.getfirstname();
+                                        String firstname = input.next();
+                                        v.getLastname();
+                                        String lastname = input.next();
+                                        v.getAge();
+                                        int age = input.nextInt();
+                                        v.getGender();
+                                        String gender = input.next();
+                                        v.getUserid();
+                                        int userid = input.nextInt();
+                                        voters v1 = new voters(firstname, lastname, age, gender, userid);
+                                        myWriter.write("name:" + firstname + " " + lastname + " " + "age:" + age + " " + "gender:" + gender + " " + "userid:" + userid + "\r\n");
+
+                                    } while (x == y);
+                                    myWriter.close();
+
+
+                                } catch (IOException e) {
+                                    System.out.println("An error occurred.");
+                                    e.printStackTrace();
+                                }
+
+
+                            }
+                            break;
+                        }
+                        case 2: {
+                            System.out.println("add candidate account..");
+                            System.out.println("election type of the candidate" + "\n" + "1.presidential election" + "\n" + "2.parliament election" + "\n" + "3.local government election" + "\n" + "enter the number");
+                            int electionType = input.nextInt();
+                            if (electionType == 1) {
+                                try {
+                                    File myObj = new File("presidential candidate.txt");
+                                    if (myObj.createNewFile()) {
+                                        System.out.println("File created: " + myObj.getName());
+                                    } else {
+                                        System.out.println("File already exists.");
+                                    }
+                                    FileWriter myWriter = new FileWriter("presidential candidate.txt");
+                                    int x;
+                                    int y;
+                                    do {
+                                        x = 1;
+                                        System.out.println("create account for a presidential candidate yes-1 no-0");
+                                        y = input.nextInt();
+                                        if (y == 0) {
+                                            break;
+                                        }
+                                        candidates c = new candidates();
+                                        c.getfirstname();
+                                        String firstname = input.next();
+                                        c.getLastname();
+                                        String lastname = input.next();
+                                        c.getAge();
+                                        int age = input.nextInt();
+                                        c.getGender();
+                                        String gender = input.next();
+                                        c.getParty();
+                                        String party = input.next();
+                                        c.getDistrict();
+                                        String district = input.next();
+                                        candidates c1 = new candidates(firstname, lastname, age, gender, party, district);
+                                        myWriter.write("name:" + firstname + " " + lastname + " " + "age:" + age + " " + "gender:" + gender + " " + "party:" + party + " " + "district:" + district + "\r\n");
+
+                                    } while (x == y);
+                                    myWriter.close();
+                                    break;
+                                } catch (IOException e) {
+                                    System.out.println("An error occurred.");
+                                    e.printStackTrace();
+                                }
+
+                            } else if (electionType == 2) {
+                                try {
+                                    File myObj = new File("parliament candidate.txt");
+                                    if (myObj.createNewFile()) {
+                                        System.out.println("File created: " + myObj.getName());
+                                    } else {
+                                        System.out.println("File already exists.");
+                                    }
+                                    FileWriter myWriter = new FileWriter("parliament candidate.txt");
+                                    int x;
+                                    int y;
+                                    do {
+                                        x = 1;
+                                        System.out.println("create account for a parliament candidate yes-1 no-0");
+                                        y = input.nextInt();
+                                        if (y == 0) {
+                                            break;
+                                        }
+                                        candidates c = new candidates();
+                                        c.getfirstname();
+                                        String firstname = input.next();
+                                        c.getLastname();
+                                        String lastname = input.next();
+                                        c.getAge();
+                                        int age = input.nextInt();
+                                        c.getGender();
+                                        String gender = input.next();
+                                        c.getParty();
+                                        String party = input.next();
+                                        c.getDistrict();
+                                        String district = input.next();
+                                        candidates c1 = new candidates(firstname, lastname, age, gender, party, district);
+                                        myWriter.write("name:" + firstname + " " + lastname + " " + "age:" + age + " " + "gender:" + gender + " " + "party:" + party + " " + "district:" + district + "\r\n");
+
+                                    } while (x == y);
+                                    myWriter.close();
+                                    break;
+                                } catch (IOException e) {
+                                    System.out.println("An error occurred.");
+                                    e.printStackTrace();
+                                }
+
+                            } else if (electionType == 3) {
+                                try {
+                                    File myObj = new File("local government candidate.txt");
+                                    if (myObj.createNewFile()) {
+                                        System.out.println("File created: " + myObj.getName());
+                                    } else {
+                                        System.out.println("File already exists.");
+                                    }
+                                    FileWriter myWriter = new FileWriter("local government candidate.txt");
+                                    int x;
+                                    int y;
+                                    do {
+                                        x = 1;
+                                        System.out.println("create account for a local government candidate yes-1 no-0");
+                                        y = input.nextInt();
+                                        if (y == 0) {
+                                            break;
+                                        }
+                                        candidates c = new candidates();
+                                        c.getfirstname();
+                                        String firstname = input.next();
+                                        c.getLastname();
+                                        String lastname = input.next();
+                                        c.getAge();
+                                        int age = input.nextInt();
+                                        c.getGender();
+                                        String gender = input.next();
+                                        c.getParty();
+                                        String party = input.next();
+                                        c.getDistrict();
+                                        String district = input.next();
+                                        candidates c1 = new candidates(firstname, lastname, age, gender, party, district);
+                                        myWriter.write("name:" + firstname + " " + lastname + " " + "age:" + age + " " + "gender:" + gender + " " + "party:" + party + " " + "district:" + district + "\r\n");
+
+                                    } while (x == y);
+                                    myWriter.close();
+                                    break;
+                                } catch (IOException e) {
+                                    System.out.println("An error occurred.");
+                                    e.printStackTrace();
+                                }
+
+                            } else {
+                                System.out.println("invalid election type");
+                            }
+                        }
+                        case 3: {
+                            System.out.println("add new party..");
+                            try {
+                                File myObj = new File("parties.txt");
+                                if (myObj.createNewFile()) {
+                                    System.out.println("File created: " + myObj.getName());
+                                } else {
+                                    System.out.println("File already exists.");
+                                }
+                                FileWriter myWriter = new FileWriter("parties.txt");
+                                int x;
+                                int y;
+                                do {
+                                    x = 1;
+                                    System.out.println("create new party yes-1 no-0");
+                                    y = input.nextInt();
+                                    if (y == 0) {
+                                        break;
+                                    }
+                                    parties p = new parties();
+                                    p.getName();
+                                    String name = input.next();
+                                    p.getMark();
+                                    String mark = input.next();
+                                    p.getDetails();
+                                    String details = input.next();
+                                    parties p1 = new parties(name, mark, details);
+                                    myWriter.write("party name:" + name + " " + "mark:" + mark + " " + "details:" + details + "\r\n");
+
+
+                                } while (x == y);
+                                myWriter.close();
+                                break;
+
+
+                            } catch (IOException e) {
+                                System.out.println("An error occurred.");
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                        case 4: {
+                            System.out.println("**you are going to start an election**");
+                            elections e = new elections();
+                            e.getElectionName();
+                            String electionName=input.next();
+                            e.getElectionDate();
+                            String electionDate= input.next();
+                            elections e1=new elections(electionName,electionDate);
+                            e.startElection();
+
+
+                        }
+                    }
+                } while (l == m);
+            } else {
+                System.out.println("password is incorrect.please enter the valid password");
+
+            }
+        }
+        else
+            System.out.println("username is invalid.please enter the valid username");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
